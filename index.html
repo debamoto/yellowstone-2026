@@ -1,0 +1,753 @@
+<title>Yellowstone Oct 2026</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+  /* ── Tokens ── */
+  :root {
+    --bg:          #0E0C0A;
+    --bg-2:        #161210;
+    --bg-3:        #1E1A14;
+    --surface:     #141008;
+    --text-1:      #EDE4D5;
+    --text-2:      #9A8878;
+    --text-3:      #6A5A4A;
+    --accent:      #C8922A;
+    --accent-lit:  #D8A84A;
+    --accent-bg:   rgba(200,146,42,0.15);
+    --thermal:     #E09A6A;
+    --thermal-bg:  rgba(224,154,106,0.13);
+    --pool:        #5CC4CE;
+    --pool-bg:     rgba(92,196,206,0.12);
+    --booked:      #C8922A;
+    --booked-bg:   rgba(200,146,42,0.15);
+    --pending:     #D08848;
+    --pending-bg:  rgba(208,136,72,0.14);
+    --border:      rgba(220,190,150,0.16);
+    --route-line:  #2A2018;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #000000;
+      --bg-2:        #0D0D0D;
+      --bg-3:        #1A1A1A;
+      --surface:     #111111;
+      --text-1:      #EDE4D8;
+      --text-2:      #C49A72;
+      --text-3:      #7A5A3C;
+      --accent:      #EDB340;
+      --accent-lit:  #F5C85A;
+      --accent-bg:   rgba(237,179,64,0.14);
+      --thermal:     #D4763A;
+      --thermal-bg:  rgba(212,118,58,0.12);
+      --pool:        #4FBBC7;
+      --pool-bg:     rgba(79,187,199,0.11);
+      --booked:      #D4943A;
+      --booked-bg:   rgba(212,148,58,0.14);
+      --pending:     #CC6020;
+      --pending-bg:  rgba(204,96,32,0.14);
+      --border:      rgba(255,220,170,0.09);
+      --route-line:  #251A0E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:          #0E0C0A;
+    --bg-2:        #161210;
+    --bg-3:        #1E1A14;
+    --surface:     #141008;
+    --text-1:      #EDE4D5;
+    --text-2:      #9A8878;
+    --text-3:      #6A5A4A;
+    --accent:      #C8922A;
+    --accent-lit:  #D8A84A;
+    --accent-bg:   rgba(200,146,42,0.15);
+    --thermal:     #E09A6A;
+    --thermal-bg:  rgba(224,154,106,0.13);
+    --pool:        #5CC4CE;
+    --pool-bg:     rgba(92,196,206,0.12);
+    --booked:      #C8922A;
+    --booked-bg:   rgba(200,146,42,0.15);
+    --pending:     #D08848;
+    --pending-bg:  rgba(208,136,72,0.14);
+    --border:      rgba(220,190,150,0.16);
+    --route-line:  #2A2018;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    font-size: 18px;
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 32px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .trip-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: 26px;
+    letter-spacing: -0.4px;
+    color: var(--text-1);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .trip-meta {
+    font-size: 12.5px;
+    color: var(--text-2);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .meta-sep { color: var(--border); }
+  .flight-block {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+  }
+  .flight-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-2);
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .flight-row strong { color: var(--text-1); font-weight: 500; }
+  .flight-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .conf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 3px 8px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    align-self: flex-end;
+  }
+  /* ── Page body ── */
+  .main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 24px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  /* ── Section header ── */
+  .sh {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .sh-label {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .sh-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  /* ── Route Timeline ── */
+  .timeline-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .timeline {
+    display: flex;
+    align-items: flex-start;
+    min-width: 680px;
+    padding: 6px 0 2px;
+  }
+  .tl-stop {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tl-connector {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 14px;
+  }
+  .tl-arm {
+    flex: 1;
+    height: 1.5px;
+    background: var(--route-line);
+  }
+  .tl-arm.invisible { background: transparent; }
+  .tl-node {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    border: 2px solid var(--pool);
+    background: var(--surface);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .tl-node.confirmed {
+    background: var(--booked);
+    border-color: var(--booked);
+  }
+  .tl-node.airport {
+    background: var(--accent);
+    border-color: var(--accent);
+    width: 13px; height: 13px;
+  }
+  .tl-label {
+    text-align: center;
+    margin-top: 9px;
+    padding: 0 4px;
+  }
+  .tl-place {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-1);
+    line-height: 1.25;
+  }
+  .tl-night {
+    font-size: 10.5px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .tl-drive {
+    font-size: 10px;
+    color: var(--pool);
+    font-weight: 500;
+    margin-top: 5px;
+    white-space: nowrap;
+  }
+  /* ── Night Cards ── */
+  .nights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .nc {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 17px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .nc.is-booked { border-color: var(--border); }
+  .nc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .nc-night {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .nc-date {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text-1);
+    line-height: 1.1;
+    margin-top: 2px;
+    letter-spacing: -0.3px;
+  }
+  .nc-city {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 1px;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 10.5px;
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .status-pill.booked { background: rgba(74,180,100,0.15); color: #5DBD74; }
+  .status-pill.pending { background: var(--pending-bg); color: var(--pending); }
+  .sdot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .nc-hotels {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 14px;
+  }
+  .nc-hotel-link {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--pool);
+    text-decoration: none;
+    line-height: 1.35;
+  }
+  .nc-hotel-link:hover { text-decoration: underline; }
+  .nc-or {
+    font-size: 10.5px;
+    color: var(--text-3);
+    padding: 1px 0;
+  }
+  .nc-conf {
+    font-size: 11px;
+    color: var(--text-2);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .nc-drive {
+    border-top: 1px solid var(--border);
+    padding-top: 11px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .drive-ico {
+    width: 13px; height: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    opacity: 0.35;
+    color: var(--text-1);
+  }
+  .drive-txt {
+    font-size: 11px;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  .drive-txt strong { color: var(--text-1); font-weight: 500; }
+  /* ── Two-col ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  /* ── Priorities ── */
+  .priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .pi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.12s, background 0.12s;
+  }
+  .pi:hover {
+    border-color: var(--thermal);
+    background: var(--thermal-bg);
+  }
+  .pi-rank {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: 19px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1;
+    width: 16px;
+    text-align: right;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .pi-body { flex: 1; min-width: 0; }
+  .pi-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-1);
+    line-height: 1.3;
+  }
+  .pi-sub {
+    font-size: 11.5px;
+    color: var(--text-2);
+    margin-top: 2px;
+  }
+  .pi-flag {
+    font-size: 10.5px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-weight: 500;
+    flex-shrink: 0;
+    align-self: center;
+    white-space: nowrap;
+  }
+  /* ── Dining ── */
+  .dining-city { margin-bottom: 18px; }
+  .dining-city:last-child { margin-bottom: 0; }
+  .city-head {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .city-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .dining-list { display: flex; flex-direction: column; gap: 7px; }
+  .di {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 13px;
+  }
+  .di.star {
+    border-left: 3px solid var(--accent);
+  }
+  .di-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--thermal);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+  .di-name:hover { text-decoration: underline; }
+  .di-tag {
+    font-size: 11px;
+    color: var(--text-3);
+    font-style: italic;
+    margin-left: 5px;
+  }
+  .di-note {
+    font-size: 12px;
+    color: var(--text-2);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .header { padding: 18px 18px; }
+    .flight-block { align-items: flex-start; }
+    .main { padding: 22px 16px 56px; gap: 32px; }
+    .trip-title { font-size: 21px; }
+    .two-col { grid-template-columns: 1fr; }
+    .nights-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pi { transition: none; }
+  }
+</style>
+<!-- ── Header ── -->
+<header class="header">
+  <div>
+    <div class="trip-title">Yellowstone &amp; Heart Mountain</div>
+    <div class="trip-meta">
+      <span>Oct 8–12, 2026</span>
+      <span class="meta-sep">·</span>
+      <span>Debbie, David &amp; Mio</span>
+      <span class="meta-sep">·</span>
+      <span>BZN Round-Trip</span>
+    </div>
+  </div>
+  <div class="flight-block">
+    <div class="flight-row">
+      <strong>Oct 8</strong>&nbsp; UA 562 &nbsp;·&nbsp; SFO 12:00 pm → BZN 3:14 pm
+    </div>
+    <div class="flight-row">
+      <strong>Oct 12</strong>&nbsp; UA 1702 &nbsp;·&nbsp; BZN 4:22 pm → SFO 5:58 pm
+    </div>
+    <div class="conf-badge">Conf B59YJD</div>
+  </div>
+</header>
+<!-- ── Main ── -->
+<main class="main">
+  <!-- Route -->
+  <section>
+    <div class="sh"><span class="sh-label">Route</span><span class="sh-rule"></span></div>
+    <div class="timeline-wrap">
+      <div class="timeline">
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm invisible"></div>
+            <div class="tl-node airport"></div>
+            <div class="tl-arm"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">BZN</div>
+            <div class="tl-night">Oct 8 · 3:14 pm</div>
+          </div>
+        </div>
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm"></div>
+            <div class="tl-node"></div>
+            <div class="tl-arm"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">Gardiner</div>
+            <div class="tl-night">Night 1 · Oct 8</div>
+          </div>
+        </div>
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm"></div>
+            <div class="tl-node confirmed"></div>
+            <div class="tl-arm"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">Canyon Lodge ✓</div>
+            <div class="tl-night">Night 2 · Oct 9</div>
+          </div>
+        </div>
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm"></div>
+            <div class="tl-node"></div>
+            <div class="tl-arm"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">Cody</div>
+            <div class="tl-night">Night 3 · Oct 10</div>
+          </div>
+        </div>
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm"></div>
+            <div class="tl-node"></div>
+            <div class="tl-arm"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">Bozeman</div>
+            <div class="tl-night">Night 4 · Oct 11</div>
+          </div>
+        </div>
+        <div class="tl-stop">
+          <div class="tl-connector">
+            <div class="tl-arm"></div>
+            <div class="tl-node airport"></div>
+            <div class="tl-arm invisible"></div>
+          </div>
+          <div class="tl-label">
+            <div class="tl-place">BZN Depart</div>
+            <div class="tl-night">Oct 12 · 4:22 pm</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Nights -->
+  <section>
+    <div class="sh"><span class="sh-label">Where We Sleep</span><span class="sh-rule"></span></div>
+    <div class="nights-grid">
+      <div class="nc">
+        <div class="nc-top">
+          <div>
+            <div class="nc-night">Night 1</div>
+            <div class="nc-date">Oct 8</div>
+            <div class="nc-city">Gardiner, MT</div>
+          </div>
+          <div class="status-pill pending"><span class="sdot"></span>Book</div>
+        </div>
+        <div class="nc-hotels">
+          <a href="https://www.yellowstonegatewayinn.com" target="_blank" class="nc-hotel-link">Yellowstone Gateway Inn</a>
+          <div class="nc-or">or</div>
+          <a href="https://www.absarokalodge.com" target="_blank" class="nc-hotel-link">Absaroka Lodge</a>
+        </div>
+        <div class="nc-drive">
+          <div class="drive-txt"><strong>BZN → Gardiner</strong> &nbsp;·&nbsp; 80 mi &nbsp;·&nbsp; ~1.5 hrs</div>
+        </div>
+      </div>
+      <div class="nc is-booked">
+        <div class="nc-top">
+          <div>
+            <div class="nc-night">Night 2</div>
+            <div class="nc-date">Oct 9</div>
+            <div class="nc-city">Inside the Park</div>
+          </div>
+          <div class="status-pill booked">✓ Booked</div>
+        </div>
+        <div class="nc-hotels">
+          <a href="https://www.yellowstonenationalparklodges.com/lodging/summer-lodges/canyon-lodge/" target="_blank" class="nc-hotel-link">Canyon Lodge</a>
+          <div class="nc-conf">Conf #21105106</div>
+        </div>
+        <div class="nc-drive">
+          <div class="drive-txt"><strong>Gardiner → Canyon</strong> &nbsp;·&nbsp; 42 mi &nbsp;·&nbsp; ~1h 15min</div>
+        </div>
+      </div>
+      <div class="nc">
+        <div class="nc-top">
+          <div>
+            <div class="nc-night">Night 3</div>
+            <div class="nc-date">Oct 10</div>
+            <div class="nc-city">Cody, WY</div>
+          </div>
+          <div class="status-pill pending"><span class="sdot"></span>Book</div>
+        </div>
+        <div class="nc-hotels">
+          <a href="https://www.thecodyhotel.com" target="_blank" class="nc-hotel-link">The Cody Hotel</a>
+          <div class="nc-or">or</div>
+          <a href="https://www.chamberlininn.com" target="_blank" class="nc-hotel-link">Chamberlin Inn</a>
+        </div>
+        <div class="nc-drive">
+          <div class="drive-txt"><strong>Canyon → Cody</strong> &nbsp;·&nbsp; ~152 mi &nbsp;·&nbsp; ~3.5 hrs</div>
+        </div>
+      </div>
+      <div class="nc">
+        <div class="nc-top">
+          <div>
+            <div class="nc-night">Night 4</div>
+            <div class="nc-date">Oct 11</div>
+            <div class="nc-city">Bozeman, MT</div>
+          </div>
+          <div class="status-pill pending"><span class="sdot"></span>Book</div>
+        </div>
+        <div class="nc-hotels">
+          <a href="https://www.armoryhotel.com" target="_blank" class="nc-hotel-link">Kimpton Armory ⭐</a>
+          <div class="nc-or">or</div>
+          <a href="https://www.marriott.com/en-us/hotels/bznac-ac-hotel-bozeman-downtown/overview/" target="_blank" class="nc-hotel-link">AC Hotel by Marriott</a>
+          <div class="nc-or">or</div>
+          <a href="https://www.larkbozeman.com" target="_blank" class="nc-hotel-link">The Lark Bozeman</a>
+        </div>
+        <div class="nc-drive">
+          <div class="drive-txt"><strong>Cody → Bozeman</strong> &nbsp;·&nbsp; ~185 mi &nbsp;·&nbsp; ~3 hrs</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Priorities + Dining -->
+  <div class="two-col">
+    <!-- Must-Do -->
+    <section>
+      <div class="sh"><span class="sh-label">Must-Do</span><span class="sh-rule"></span></div>
+      <div class="priority-list">
+        <a href="https://www.nps.gov/yell/planyourvisit/towerfall.htm" target="_blank" class="pi">
+          <div class="pi-rank">1</div>
+          <div class="pi-body">
+            <div class="pi-name">Tower Fall</div>
+            <div class="pi-sub">Day 2 &nbsp;·&nbsp; 10:00 AM</div>
+          </div>
+          <div class="pi-flag">Pass closes Oct 12</div>
+        </a>
+        <a href="https://www.nps.gov/yell/planyourvisit/norris.htm" target="_blank" class="pi">
+          <div class="pi-rank">2</div>
+          <div class="pi-body">
+            <div class="pi-name">Norris Geyser Basin</div>
+            <div class="pi-sub">Day 2 afternoon</div>
+          </div>
+        </a>
+        <a href="https://www.nps.gov/yell/planyourvisit/grandprismatic.htm" target="_blank" class="pi">
+          <div class="pi-rank">3</div>
+          <div class="pi-body">
+            <div class="pi-name">Grand Prismatic Spring</div>
+            <div class="pi-sub">Day 3 &nbsp;·&nbsp; 11:00 AM &nbsp;·&nbsp; Overlook hike</div>
+          </div>
+        </a>
+        <a href="https://www.nps.gov/yell/planyourvisit/oldfaithful.htm" target="_blank" class="pi">
+          <div class="pi-rank">4</div>
+          <div class="pi-body">
+            <div class="pi-name">Old Faithful</div>
+            <div class="pi-sub">Day 3 &nbsp;·&nbsp; 1:30 PM &nbsp;·&nbsp; Near-empty in October</div>
+          </div>
+        </a>
+        <a href="https://www.heartmountain.org" target="_blank" class="pi">
+          <div class="pi-rank">5</div>
+          <div class="pi-body">
+            <div class="pi-name">Heart Mountain Interpretive Center</div>
+            <div class="pi-sub">Day 4 &nbsp;·&nbsp; 10:00 AM &nbsp;·&nbsp; 1.5–2 hrs</div>
+          </div>
+        </a>
+      </div>
+    </section>
+    <!-- Dining -->
+    <section>
+      <div class="sh"><span class="sh-label">Dining</span><span class="sh-rule"></span></div>
+      <div class="dining-city">
+        <div class="city-head">Cody, WY</div>
+        <div class="dining-list">
+          <div class="di star">
+            <div><a href="https://www.codycattlecompany.com" target="_blank" class="di-name">Cody Cattle Company</a><span class="di-tag">— Most unique</span></div>
+            <div class="di-note">Cowboy dinner show, cast iron BBQ, rodeo next door. Book ahead.</div>
+          </div>
+          <div class="di">
+            <div><a href="https://www.codysteakhouse.com" target="_blank" class="di-name">Cody Steakhouse</a><span class="di-tag">— Best dinner</span></div>
+            <div class="di-note">Top-rated. Filet, halibut, ribs. Closed Sun &amp; Mon — reserve ahead.</div>
+          </div>
+          <div class="di">
+            <div><a href="https://www.bestwestern.com/en_US/book/hotel-rooms.56121.html" target="_blank" class="di-name">8th Street at the Ivy</a><span class="di-tag">— All-rounder</span></div>
+            <div class="di-note">Opens 7am. Breakfast or dinner. Family-friendly, open daily.</div>
+          </div>
+        </div>
+      </div>
+      <div class="dining-city">
+        <div class="city-head">Bozeman, MT</div>
+        <div class="dining-list">
+          <div class="di star">
+            <div><a href="https://www.montanaaleworks.com" target="_blank" class="di-name">Montana Ale Works</a><span class="di-tag">— Most atmospheric</span></div>
+            <div class="di-note">Restored 1890s railroad depot. Great beer, relaxed family dinner.</div>
+          </div>
+          <div class="di">
+            <div><a href="https://www.plonkwine.com" target="_blank" class="di-name">Plonk Wine Bar</a><span class="di-tag">— Best food &amp; wine</span></div>
+            <div class="di-note">Best wine list in Bozeman. Refined, intimate. Great for Night 4.</div>
+          </div>
+          <div class="di">
+            <div><a href="https://www.blackbirdkitchenbozeman.com" target="_blank" class="di-name">Blackbird Kitchen</a><span class="di-tag">— Best family dinner</span></div>
+            <div class="di-note">Farm-to-table, upscale but approachable. Doesn't feel touristy.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
